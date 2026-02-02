@@ -129,10 +129,7 @@ Predictions are intended as **decision-support tools**, not automated actions.
 
 ## ▶️ How to Run the Project
 
-1. Install dependencies:
+### 1. Clone the repository
 ```bash
-pip install -r requirements.txt
-
-2. Run the full pipeline:
-```bash
-python main.py
+git clone https://github.com/kuzevaStasy/HR-Analytics-Employee-Attrition-Modeling.git
+cd HR-Analytics-Employee-Attrition-Modeling
