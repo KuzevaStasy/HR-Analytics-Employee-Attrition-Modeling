@@ -33,23 +33,41 @@ The emphasis is placed on:
 ## 📂 Project Structure
 
 HR-Analytics-Employee-Insights/
+
 │
+
 ├── data/
+
 │ ├── raw/ # Original HR dataset
+
 │ └── processed/ # Model-ready datasets
+
 │
+
 ├── notebooks/
+
 │ ├── 01_EDA_HR_Insights.ipynb
+
 │ ├── 02_Feature_Engineering.ipynb
+
 │ └── 03_Attrition_Modeling.ipynb
+
 │
+
 ├── src/
+
 │ ├── preprocessing.py # Data loading and cleaning
+
 │ ├── features.py # Feature engineering logic
+
 │ └── modeling.py # Training and evaluation utilities
+
 │
+
 ├── main.py # End-to-end pipeline entry point
+
 ├── requirements.txt
+
 └── README.md
 
 
@@ -114,6 +132,7 @@ Predictions are intended as **decision-support tools**, not automated actions.
 1. Install dependencies:
 ```bash
 pip install -r requirements.txt
-2. Run the full pipeline:
 
+2. Run the full pipeline:
+```bash
 python main.py
