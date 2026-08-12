@@ -26,12 +26,9 @@ def parse_dates(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+TERMINATED_STATUSES = ["Voluntarily Terminated", "Terminated for Cause"]
+
 def create_attrition_target(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Create binary attrition target.
-    Active employees -> 0
-    Terminated employees -> 1
-    """
     df = df.copy()
-    df["Attrition"] = np.where(df["EmploymentStatus"] == "Active", 0, 1)
+    df["Attrition"] = np.where(df["EmploymentStatus"].isin(TERMINATED_STATUSES), 1, 0)
     return df
