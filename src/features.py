@@ -97,10 +97,6 @@ def select_model_features(df: pd.DataFrame) -> pd.DataFrame:
         "DaysLateLast30",
         "Absences",
         "PerformanceScoreNum",
-        "LowEngagementFlag",
-        "LowSatisfactionFlag",
-        "HighAbsenceFlag",
-        "LateRecentlyFlag",
         "Attrition"
     ]
 
