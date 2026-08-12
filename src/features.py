@@ -25,14 +25,19 @@ def create_tenure_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def create_salary_features(df: pd.DataFrame) -> pd.DataFrame:
+def create_salary_features(df: pd.DataFrame, dept_avg_salary: pd.Series = None) -> pd.DataFrame:
     """
     Create relative salary features.
+    If dept_avg_salary is None, it's computed from this df (use only on train).
+    Otherwise, the provided mapping (learned on train) is applied.
     """
     df = df.copy()
-    df["DeptAvgSalary"] = df.groupby("Department")["Salary"].transform("mean")
+    if dept_avg_salary is None:
+        dept_avg_salary = df.groupby("Department")["Salary"].mean()
+
+    df["DeptAvgSalary"] = df["Department"].map(dept_avg_salary)
     df["RelativeSalary"] = df["Salary"] / df["DeptAvgSalary"]
-    return df
+    return df, dept_avg_salary
 
 
 def create_engagement_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -47,18 +52,18 @@ def create_engagement_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def create_behavior_features(df: pd.DataFrame) -> pd.DataFrame:
+def create_behavior_features(df: pd.DataFrame, absence_threshold: float = None) -> pd.DataFrame:
     """
     Create attendance and behavior-based features.
+    If absence_threshold is None, it's computed from this df (use only on train).
     """
     df = df.copy()
+    if absence_threshold is None:
+        absence_threshold = df["Absences"].median()
 
-    df["HighAbsenceFlag"] = np.where(
-        df["Absences"] > df["Absences"].median(), 1, 0
-    )
+    df["HighAbsenceFlag"] = np.where(df["Absences"] > absence_threshold, 1, 0)
     df["LateRecentlyFlag"] = np.where(df["DaysLateLast30"] > 0, 1, 0)
-
-    return df
+    return df, absence_threshold
 
 
 def encode_performance(df: pd.DataFrame) -> pd.DataFrame:
