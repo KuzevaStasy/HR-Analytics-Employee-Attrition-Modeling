@@ -92,7 +92,7 @@ def encode_performance(df: pd.DataFrame) -> pd.DataFrame:
 
 def select_model_features(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Select final feature set for modeling.
+    Select final feature set for modeling (the same 12 features as notebooks 02 and 03).
     """
     features = [
         "TenureYears",
@@ -103,6 +103,10 @@ def select_model_features(df: pd.DataFrame) -> pd.DataFrame:
         "DaysLateLast30",
         "Absences",
         "PerformanceScoreNum",
+        "LowEngagementFlag",
+        "LowSatisfactionFlag",
+        "HighAbsenceFlag",
+        "LateRecentlyFlag",
         "Attrition"
     ]
 
