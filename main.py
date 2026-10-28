@@ -1,5 +1,7 @@
 import logging
 
+from pathlib import Path
+
 from sklearn.model_selection import train_test_split
 
 from src.preprocessing import (
@@ -20,6 +22,9 @@ from src.modeling import (
     evaluate_model
 )
 
+# Dataset location, resolved relative to this file so the script works from any directory
+DATA_PATH = Path(__file__).resolve().parent / "data" / "raw" / "HRDataset_v14.csv"
+
 # -----------------------------------------------------------------------------
 # Logging configuration
 # -----------------------------------------------------------------------------
@@ -37,9 +42,9 @@ def run_pipeline() -> None:
 
     # 1. Load raw data
     logging.info("Loading raw dataset")
-    df = load_data("data/raw/HRDataset_v14.csv")
+    df = load_data(str(DATA_PATH))
 
-    # 2. Preprocessing (безопасно за целия df — не зависи от train/test)
+    # 2. Preprocessing (safe on the whole dataframe: does not depend on the train/test split)
     logging.info("Parsing date columns")
     df = parse_dates(df)
 
@@ -52,7 +57,7 @@ def run_pipeline() -> None:
     logging.info("Encoding performance scores")
     df = encode_performance(df)
 
-    # 3. Train / test split — ПРЕДИ да смятаме каквато и да е агрегатна статистика
+    # 3. Train / test split - done BEFORE computing any aggregate statistic
     logging.info("Splitting data into train and test sets")
     train_df, test_df = train_test_split(
         df,
@@ -61,7 +66,7 @@ def run_pipeline() -> None:
         stratify=df["Attrition"]
     )
 
-    # 4. Feature engineering — статистиките се учат само от train
+    # 4. Feature engineering - statistics are learned on the training set only
     logging.info("Creating salary features (fit on train)")
     train_df, dept_avg_salary = create_salary_features(train_df)
     test_df, _ = create_salary_features(test_df, dept_avg_salary=dept_avg_salary)
@@ -74,7 +79,7 @@ def run_pipeline() -> None:
     train_df = create_engagement_features(train_df)
     test_df = create_engagement_features(test_df)
 
-    # 5. Избор на финални колони за модела
+    # 5. Select the final model columns
     logging.info("Selecting model features")
     train_model = select_model_features(train_df).copy()
     test_model = select_model_features(test_df).copy()
@@ -93,7 +98,7 @@ def run_pipeline() -> None:
     auc = evaluate_model(model, X_test, y_test, scaler)
     logging.info(f"ROC AUC: {auc:.3f}")
 
-    # 8. Risk scores — само върху test set (не смесваме train/test при "прогнозата")
+    # 8. Risk scores - test set only (train and test are not mixed when scoring)
     logging.info("Calculating attrition risk scores for test employees")
     X_test_scaled = scaler.transform(X_test)
     test_model["AttritionRisk"] = model.predict_proba(X_test_scaled)[:, 1]
