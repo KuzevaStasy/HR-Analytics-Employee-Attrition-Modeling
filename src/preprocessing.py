@@ -13,7 +13,12 @@ def load_data(path: str) -> pd.DataFrame:
     """
     Load raw HR dataset.
     """
-    return pd.read_csv(path)
+    df = pd.read_csv(path)
+    # Some text columns carry trailing spaces (e.g. 'Production       ')
+    for col in df.columns:
+        if pd.api.types.is_string_dtype(df[col]):
+            df[col] = df[col].str.strip()
+    return df
 
 
 def parse_dates(df: pd.DataFrame) -> pd.DataFrame:
@@ -22,7 +27,7 @@ def parse_dates(df: pd.DataFrame) -> pd.DataFrame:
     """
     df = df.copy()
     for col in DATE_COLS:
-        df[col] = pd.to_datetime(df[col], errors="coerce")
+        df[col] = pd.to_datetime(df[col], format="%m/%d/%Y", errors="coerce")
     return df
 
 
